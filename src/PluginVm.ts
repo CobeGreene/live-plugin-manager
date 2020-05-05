@@ -399,7 +399,7 @@ export class PluginVm {
 			EvalError: srcGlobal.EvalError,
 			Float32Array: srcGlobal.Float32Array,
 			Float64Array: srcGlobal.Float64Array,
-			Function: srcGlobal.Function,
+			// Function: srcGlobal.Function, Comment out because it broken data science lab.
 			Infinity: srcGlobal.Infinity,
 			Int16Array: srcGlobal.Int16Array,
 			Int32Array: srcGlobal.Int32Array,
