@@ -1,20 +1,10 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const vm = __importStar(require("vm"));
-const fs = __importStar(require("fs-extra"));
-const path = __importStar(require("path"));
-const debug_1 = __importDefault(require("debug"));
-const debug = debug_1.default("live-plugin-manager.PluginVm");
+const vm = require("vm");
+const fs = require("fs-extra");
+const path = require("path");
+const Debug = require("debug");
+const debug = Debug("live-plugin-manager.PluginVm");
 const SCOPED_REGEX = /^(@[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+)(.*)/;
 class PluginVm {
     constructor(manager) {
@@ -182,7 +172,7 @@ class PluginVm {
         };
         // assign missing https://nodejs.org/api/globals.html
         //  and other "not real global" objects
-        const moduleSandbox = Object.assign(Object.assign({}, pluginSandbox), { module: myModule, __dirname: moduleDirname, __filename: filePath, require: moduleRequire });
+        const moduleSandbox = Object.assign({}, pluginSandbox, { module: myModule, __dirname: moduleDirname, __filename: filePath, require: moduleRequire });
         return moduleSandbox;
     }
     sandboxResolve(pluginContext, moduleDirName, requiredName) {
@@ -307,11 +297,7 @@ class PluginVm {
     createGlobalSandbox(sandboxTemplate) {
         const srcGlobal = sandboxTemplate.global || global;
         const srcEnv = sandboxTemplate.env || global.process.env;
-        const sandbox = Object.assign(Object.assign({}, srcGlobal), { 
-            // https://stackoverflow.com/questions/59009214/some-properties-of-the-global-instance-are-not-copied-by-spread-operator-or-by-o
-            Array: srcGlobal.Array, ArrayBuffer: srcGlobal.ArrayBuffer, Boolean: srcGlobal.Boolean, Buffer: srcGlobal.Buffer, DataView: srcGlobal.DataView, Date: srcGlobal.Date, Error: srcGlobal.Error, EvalError: srcGlobal.EvalError, Float32Array: srcGlobal.Float32Array, Float64Array: srcGlobal.Float64Array, Function: srcGlobal.Function, Infinity: srcGlobal.Infinity, Int16Array: srcGlobal.Int16Array, Int32Array: srcGlobal.Int32Array, Int8Array: srcGlobal.Int8Array, Intl: srcGlobal.Intl, JSON: srcGlobal.JSON, Map: srcGlobal.Map, Math: srcGlobal.Math, NaN: srcGlobal.NaN, Number: srcGlobal.Number, Object: srcGlobal.Object, Promise: srcGlobal.Promise, RangeError: srcGlobal.RangeError, ReferenceError: srcGlobal.ReferenceError, RegExp: srcGlobal.RegExp, Set: srcGlobal.Set, String: srcGlobal.String, Symbol: srcGlobal.Symbol, SyntaxError: srcGlobal.SyntaxError, TypeError: srcGlobal.TypeError, URIError: srcGlobal.URIError, Uint16Array: srcGlobal.Uint16Array, Uint32Array: srcGlobal.Uint32Array, Uint8Array: srcGlobal.Uint8Array, Uint8ClampedArray: srcGlobal.Uint8ClampedArray, WeakMap: srcGlobal.WeakMap, WeakSet: srcGlobal.WeakSet, 
-            // create a new instance, but if process is undefined just use null, because undefined is not permitted
-            process: Object.create(srcGlobal.process || null) });
+        const sandbox = Object.assign({}, srcGlobal, { process: Object.create(srcGlobal.process) });
         // override the global obj to "unlink" it from the original global obj
         //  and make it unique for each sandbox
         sandbox.global = sandbox;

@@ -1,17 +1,14 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "es2015",
     "moduleResolution": "node",
 
     "strict": true,
     "noUnusedLocals": true,
 
     "sourceMap": true,
-    "declaration": true,
-
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "declaration": true
   },
   "exclude": [
     "samples/plugins",

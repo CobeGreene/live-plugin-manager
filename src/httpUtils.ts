@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import * as fs from "./fileSystem";
-import Debug from "debug";
+import * as Debug from "debug";
 const debug = Debug("live-plugin-manager.HttpUtils");
 
 export interface Headers {

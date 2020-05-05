@@ -1,32 +1,21 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const urlJoin = require("url-join");
-const path = __importStar(require("path"));
-const fs = __importStar(require("./fileSystem"));
+const path = require("path");
+const fs = require("./fileSystem");
 const tarballUtils_1 = require("./tarballUtils");
-const semVer = __importStar(require("semver"));
-const httpUtils = __importStar(require("./httpUtils"));
-const debug_1 = __importDefault(require("debug"));
-const debug = debug_1.default("live-plugin-manager.NpmRegistryClient");
+const semVer = require("semver");
+const httpUtils = require("./httpUtils");
+const Debug = require("debug");
+const debug = Debug("live-plugin-manager.NpmRegistryClient");
 class NpmRegistryClient {
     constructor(npmUrl, config) {
         this.npmUrl = npmUrl;
@@ -37,7 +26,7 @@ class NpmRegistryClient {
             "user-agent": config.userAgent || "live-plugin-manager"
         };
         const authHeader = createAuthHeader(config.auth);
-        this.defaultHeaders = Object.assign(Object.assign({}, staticHeaders), authHeader);
+        this.defaultHeaders = Object.assign({}, staticHeaders, authHeader);
     }
     get(name, versionOrTag = "latest") {
         return __awaiter(this, void 0, void 0, function* () {
