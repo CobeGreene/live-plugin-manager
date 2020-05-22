@@ -225,12 +225,21 @@ class PluginManager {
             if (debug.enabled) {
                 debug(`Uninstalling ${name}...`);
             }
-            const info = this.getInfo(name);
+            let info = this.getInfo(name);
             if (!info) {
                 if (debug.enabled) {
                     debug(`${name} not installed`);
                 }
-                return;
+                if (this.githubRegistry.isGithubRepo(name)) {
+                    const registryInfo = yield this.githubRegistry.get(name);
+                    info = yield this.createPluginInfo(registryInfo.name);
+                    if (!fs.directoryExists(info.location)) {
+                        return;
+                    }
+                }
+                else {
+                    return;
+                }
             }
             yield this.deleteAndUnloadPlugin(info);
         });

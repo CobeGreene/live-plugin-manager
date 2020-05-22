@@ -1,8 +1,8 @@
 import * as fs from "./fileSystem";
 import * as path from "path";
-import {NpmRegistryClient, NpmRegistryConfig} from "./NpmRegistryClient";
-import {PluginVm} from "./PluginVm";
-import {IPluginInfo} from "./PluginInfo";
+import { NpmRegistryClient, NpmRegistryConfig } from "./NpmRegistryClient";
+import { PluginVm } from "./PluginVm";
+import { IPluginInfo } from "./PluginInfo";
 import * as lockFile from "lockfile";
 import * as semver from "semver";
 import * as Debug from "debug";
@@ -69,7 +69,7 @@ export class PluginManager {
 			options.pluginsPath = path.join(options.cwd, "plugin_packages");
 		}
 
-		this.options = {...DefaultOptions, ...(options || {})};
+		this.options = { ...DefaultOptions, ...(options || {}) };
 		this.vm = new PluginVm(this);
 		this.npmRegistry = new NpmRegistryClient(this.options.npmRegistryUrl, this.options.npmRegistryConfig);
 		this.githubRegistry = new GithubRegistryClient(this.options.githubAuthentication);
@@ -176,7 +176,7 @@ export class PluginManager {
 	}
 
 	require(fullName: string): any {
-		const {pluginName, requiredPath} = this.vm.splitRequire(fullName);
+		const { pluginName, requiredPath } = this.vm.splitRequire(fullName);
 
 		const info = this.getInfo(pluginName);
 		if (!info) {
@@ -268,12 +268,20 @@ export class PluginManager {
 			debug(`Uninstalling ${name}...`);
 		}
 
-		const info = this.getInfo(name);
+		let info = this.getInfo(name);
 		if (!info) {
 			if (debug.enabled) {
 				debug(`${name} not installed`);
 			}
-			return;
+			if (this.githubRegistry.isGithubRepo(name)) {
+				const registryInfo = await this.githubRegistry.get(name);
+				info = await this.createPluginInfo(registryInfo.name);
+				if (!fs.directoryExists(info.location)) {
+					return;
+				}
+			} else {
+				return;
+			}
 		}
 
 		await this.deleteAndUnloadPlugin(info);
@@ -533,7 +541,7 @@ export class PluginManager {
 
 		// '/' is permitted to support scoped packages
 		if (name.startsWith(".")
-		|| name.indexOf("\\") >= 0) {
+			|| name.indexOf("\\") >= 0) {
 			return false;
 		}
 
